@@ -10,5 +10,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
