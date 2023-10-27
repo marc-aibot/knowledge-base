@@ -63,7 +63,7 @@ app.post("/api/answer", async (req, res) => {
       pineconeIndex,
     });
 
-    const question = req.body.question || "What is WOTUS?";
+    const question = req.body.question;
     const results = await vectorStore.similaritySearch(question);
 
     const vectorStoreRetriever = vectorStore.asRetriever();
@@ -77,11 +77,18 @@ app.post("/api/answer", async (req, res) => {
     chat_history.push({ question, answer: answer.text });
 
     res.json({ answer: answer.text, chat_history });
+    const memoryUsed = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`The current heap memory usage is approximately ${memoryUsed} MB.`);
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.log("error", error.status);
+    res
+      .status(error?.response?.status)
+      .json({ error: error?.response?.statusText });
+    // }
   }
 });
+
+
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
