@@ -9,7 +9,7 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node --max-old-space-size=1024 index.js"
   },
   "engines": {
     "node": "18.x"
