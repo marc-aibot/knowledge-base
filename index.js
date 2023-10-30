@@ -81,9 +81,9 @@ app.post("/api/answer", async (req, res) => {
     console.log(`The current heap memory usage is approximately ${memoryUsed} MB.`);
   } catch (error) {
     console.log("error", error.status);
-    res
-      .status(error?.response?.status)
-      .json({ error: error?.response?.statusText });
+    // res
+    //   .status(error?.response?.status)
+    //   .json({ error: error?.response?.statusText });
     // }
   }
 });
