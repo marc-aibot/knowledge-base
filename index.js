@@ -31,7 +31,13 @@ app.use(express.json());
 
 app.post("/api/answer", async (req, res) => {
   try {
+    const memoryUsedBeforeModel = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`Memory used before creating model: ${memoryUsedBeforeModel} MB`);
+
     const model = new OpenAI({ temperature: 0 });
+
+    const memoryUsedBeforeClient = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`Memory used before creating PineconeClient: ${memoryUsedBeforeClient} MB`);
 
     const client = new PineconeClient();
     await client.init({
@@ -40,6 +46,7 @@ app.post("/api/answer", async (req, res) => {
     });
     const pineconeIndex = client.Index(process.env.PINECONE_INDEX);
 
+    // ... (rest of your logic)
     const loader = new DirectoryLoader("./docs", {
       ".json": (path) => new JSONLoader(path, "/texts"),
       ".jsonl": (path) => new JSONLinesLoader(path, "/html"),
@@ -76,15 +83,15 @@ app.post("/api/answer", async (req, res) => {
     const answer = await chain.call({ question, chat_history });
     chat_history.push({ question, answer: answer.text });
 
+    const memoryUsedBeforeAnswer = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`Memory used before sending the answer: ${memoryUsedBeforeAnswer} MB`);
+
     res.json({ answer: answer.text, chat_history });
+    
     const memoryUsed = process.memoryUsage().heapUsed / 1024 / 1024;
     console.log(`The current heap memory usage is approximately ${memoryUsed} MB.`);
   } catch (error) {
-    console.log("error", error.status);
-    // res
-    //   .status(error?.response?.status)
-    //   .json({ error: error?.response?.statusText });
-    // }
+    console.log("error", error.response?.status);
   }
 });
 
